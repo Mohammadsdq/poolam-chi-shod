@@ -1,4 +1,5 @@
 import { parseBlueBankExcel } from "./ExcelParser.js";
+import { analyzeTransactions } from "./DataAnalyzer.js";
 
 export const initializeFileUpload = () => {
 
@@ -31,34 +32,41 @@ export const initializeFileUpload = () => {
         fileName.textContent = "در حال بررسی و پردازش فایل...";
         fileName.style.color = "#fbbf24";
 
+
         try {
             const transactions = await parseBlueBankExcel(file);
 
+            // Analyze transactions
+            const analysis = analyzeTransactions(transactions);
+
             fileName.textContent =
-                `${transactions.length} تراکنش با موفقیت شناسایی شد.`;
+                `${analysis.summary.transactionCount} تراکنش با موفقیت تحلیل شد.`;
 
             fileName.style.color = "#22c55e";
 
-            console.log("Parsed transactions:", transactions);
+            console.log("Raw Transactions:", transactions);
+            console.log("Analysis Result:", analysis);
 
-            // Send parsed data to the application
+            // Send analysis to the application
             window.dispatchEvent(
                 new CustomEvent("transactions:loaded", {
                     detail: {
-                        transactions,
+                        transactions: analysis.transactions,
+                        analysis,
                         fileName: file.name
                     }
                 })
             );
 
         } catch (error) {
-            console.error("Excel Parser Error:", error);
+            console.error("Excel Processing Error:", error);
 
             fileName.textContent =
                 error.message || "خطا در پردازش فایل اکسل";
 
             fileName.style.color = "#f87171";
         }
+
     };
 
 
