@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -5,415 +6,460 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="theme-color" content="#0b0d14">
-    <meta name="description" content="پولام چی شد؟ تحلیل هوشمند هزینه‌ها و درآمدهای شخصی">
+    <meta name="theme-color" content="#f4f7fb">
+    <meta name="description" content="پولام چی شد؟ تحلیل گردش حساب و مدیریت هزینه‌های شخصی">
 
     <title>پولام چی شد؟ | داشبورد مالی</title>
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Styles -->
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/responsive.css">
 
+    <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-
-
-    <!-- SheetJS: Excel Parser -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-    <!-- Main JavaScript -->
+    <!-- App -->
     <script type="module" src="./js/main.js"></script>
 </head>
 
 <body>
 
-    <div class="app-container">
+    <main class="app-container">
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
+        <!-- =========================
+             HEADER
+        ========================== -->
+
+        <header class="topbar">
 
             <div class="brand">
+
                 <div class="brand-icon">
                     <i data-lucide="wallet"></i>
                 </div>
 
                 <div class="brand-info">
-                    <h2>پولام چی شد؟</h2>
-                    <span>مدیریت هوشمند مالی</span>
+                    <h1>پولام چی شد؟</h1>
+                    <p>مدیریت ساده و هوشمند مالی</p>
                 </div>
 
-                <button class="close-sidebar" id="closeSidebar">
-                    <i data-lucide="x"></i>
-                </button>
             </div>
 
-            <div class="sidebar-section">
-                <span class="section-title">منوی اصلی</span>
+            <span class="privacy-label">
+                <i data-lucide="shield-check"></i>
+                پردازش محلی و حفظ حریم خصوصی
+            </span>
 
-                <nav class="navigation">
+        </header>
 
-                    <a href="#" class="nav-link active">
-                        <i data-lucide="layout-dashboard"></i>
-                        <span>داشبورد</span>
-                    </a>
 
-                    <a href="#" class="nav-link">
-                        <i data-lucide="arrow-left-right"></i>
-                        <span>تراکنش‌ها</span>
-                    </a>
+        <!-- =========================
+             UPLOAD SECTION
+        ========================== -->
 
-                    <a href="#" class="nav-link">
-                        <i data-lucide="chart-pie"></i>
-                        <span>تحلیل هزینه‌ها</span>
-                    </a>
+        <section class="upload-section" id="uploadSection">
 
-                    <a href="#" class="nav-link">
-                        <i data-lucide="calendar-days"></i>
-                        <span>گزارش ماهانه</span>
-                    </a>
+            <div class="upload-intro">
 
-                    <a href="#" class="nav-link">
+                <span class="welcome-label">
+                    مدیریت مالی شخصی
+                </span>
+
+                <h2>پولات کجا خرج شدن؟</h2>
+
+                <p>
+                    فایل گردش حسابت رو وارد کن تا نگاهی دقیق‌تر
+                    به وضعیت مالی و هزینه‌هات داشته باشیم.
+                </p>
+
+            </div>
+
+
+            <div class="upload-guide">
+
+                <div class="upload-guide-content">
+
+                    <div class="upload-guide-icon">
                         <i data-lucide="file-spreadsheet"></i>
-                        <span>گزارش سالانه</span>
-                    </a>
-
-                </nav>
-            </div>
-
-            <div class="sidebar-section">
-                <span class="section-title">ابزارها</span>
-
-                <nav class="navigation">
-
-                    <a href="#" class="nav-link">
-                        <i data-lucide="upload"></i>
-                        <span>آپلود گردش حساب</span>
-                    </a>
-
-                    <a href="#" class="nav-link">
-                        <i data-lucide="settings"></i>
-                        <span>تنظیمات</span>
-                    </a>
-
-                </nav>
-            </div>
-
-            <div class="sidebar-bottom">
-
-                <div class="sidebar-tip">
-                    <div class="tip-icon">
-                        <i data-lucide="lightbulb"></i>
                     </div>
 
-                    <h4>یه پیشنهاد کوچیک!</h4>
-                    <p>با بررسی هزینه‌هات می‌تونی بهتر برای پولت تصمیم بگیری.</p>
-                </div>
+                    <div class="upload-guide-text">
 
-                <div class="sidebar-version">
-                    <span>Poolam Chi Shod?</span>
-                    <span>v1.0.0</span>
-                </div>
+                        <h3>چطور فایل گردش حساب رو دریافت کنم؟</h3>
 
-            </div>
+                        <div class="guide-steps">
 
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-
-            <!-- HEADER -->
-            <header class="topbar">
-
-                <div class="topbar-right">
-
-                    <button class="icon-button menu-toggle" id="menuToggle">
-                        <i data-lucide="menu"></i>
-                    </button>
-
-                    <div class="page-title">
-                        <h1>داشبورد مالی</h1>
-                        <p>اینجا می‌تونی بفهمی پولات کجا رفتن!</p>
-                    </div>
-
-                </div>
-
-                <div class="topbar-left">
-
-                    <button class="icon-button">
-                        <i data-lucide="bell"></i>
-                        <span class="notification-dot"></span>
-                    </button>
-
-                    <div class="profile">
-                        <div class="profile-avatar">م</div>
-
-                        <div class="profile-info">
-                            <strong>کاربر مهمان</strong>
-                            <span>حساب شخصی</span>
-                        </div>
-                    </div>
-
-                </div>
-
-            </header>
-
-            <!-- DASHBOARD -->
-            <div class="dashboard-content">
-
-                <section class="welcome-section">
-
-                    <div>
-                        <span class="welcome-label">داشبورد مالی شخصی</span>
-
-                        <h2>سلام، خوش اومدی! 👋</h2>
-
-                        <p>
-                            بیا ببینیم این مدت پولات کجا رفتن.
-                        </p>
-                    </div>
-
-                    <button class="upload-button">
-                        <i data-lucide="upload"></i>
-                        آپلود گردش حساب
-                    </button>
-
-                </section>
-
-
-                <!-- EXCEL UPLOAD GUIDE -->
-
-                <section class="upload-guide">
-
-                    <div class="upload-guide-content">
-
-                        <div class="upload-guide-icon">
-                            <i data-lucide="file-spreadsheet"></i>
-                        </div>
-
-                        <div class="upload-guide-text">
-                            <span class="guide-label">شروع تحلیل مالی</span>
-
-                            <h3>اول باید بفهمیم پولات کجا رفتن!</h3>
-
-                            <p>
-                                برای شروع، وارد اپلیکیشن بلو شو و از بخش
-                                <strong>گردش حساب</strong>، خروجی اکسل تراکنش‌هات
-                                رو دریافت کن و اینجا آپلودش کن.
-                            </p>
-
-                            <div class="guide-steps">
-                                <div class="guide-step">
-                                    <span>۱</span>
-                                    ورود به بلو و بخش گردش حساب
-                                </div>
-
-                                <div class="guide-step">
-                                    <span>۲</span>
-                                    دریافت فایل Excel گردش حساب
-                                </div>
-
-                                <div class="guide-step">
-                                    <span>۳</span>
-                                    آپلود فایل در این قسمت
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="upload-dropzone" id="uploadDropzone">
-
-                        <input type="file" id="excelFileInput" accept=".xlsx,.xls" hidden>
-
-                        <div class="dropzone-icon">
-                            <i data-lucide="upload-cloud"></i>
-                        </div>
-
-                        <h4>فایل گردش حسابت رو اینجا انتخاب کن</h4>
-
-                        <p>فرمت‌های مجاز: XLSX و XLS</p>
-
-                        <button type="button" class="select-file-button" id="selectFileButton">
-                            <i data-lucide="folder-open"></i>
-                            انتخاب فایل اکسل
-                        </button>
-
-                        <span class="selected-file-name" id="selectedFileName">
-                            هنوز فایلی انتخاب نشده
-                        </span>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- STATISTICS -->
-                <section class="stats-grid">
-
-                    <!-- BALANCE -->
-                    <article class="stat-card balance-card">
-                        <div class="stat-header">
-                            <span>موجودی حساب</span>
-                            <span class="stat-icon purple">
-                                <i data-lucide="wallet"></i>
-                            </span>
-                        </div>
-
-                        <h3 id="balanceValue">— <small>تومان</small></h3>
-
-                        <span class="stat-description">
-                            آخرین موجودی ثبت‌شده
-                        </span>
-                    </article>
-
-                    <!-- TOTAL DEPOSITS -->
-                    <article class="stat-card">
-                        <div class="stat-header">
-                            <span>مجموع واریزی‌ها</span>
-                            <span class="stat-icon green">
-                                <i data-lucide="trending-up"></i>
-                            </span>
-                        </div>
-
-                        <h3 id="depositsValue">— <small>تومان</small></h3>
-
-                        <span class="stat-description positive">
-                            مجموع مبالغ واریزشده به حساب
-                        </span>
-                    </article>
-
-                    <!-- TOTAL EXPENSES -->
-                    <article class="stat-card">
-                        <div class="stat-header">
-                            <span>مجموع هزینه‌ها</span>
-                            <span class="stat-icon red">
-                                <i data-lucide="trending-down"></i>
-                            </span>
-                        </div>
-
-                        <h3 id="expensesValue">— <small>تومان</small></h3>
-
-                        <span class="stat-description negative">
-                            هزینه‌های واقعی، بدون انتقال وجه
-                        </span>
-                    </article>
-
-                    <!-- TRANSACTION COUNT -->
-                    <article class="stat-card">
-                        <div class="stat-header">
-                            <span>تعداد تراکنش‌ها</span>
-                            <span class="stat-icon blue">
-                                <i data-lucide="arrow-left-right"></i>
-                            </span>
-                        </div>
-
-                        <h3 id="transactionCountValue">— <small>تراکنش</small></h3>
-
-                        <span class="stat-description">
-                            تعداد کل تراکنش‌های ثبت‌شده
-                        </span>
-                    </article>
-
-                </section>
-
-
-                <!-- CHARTS -->
-                <section class="charts-grid">
-
-                    <article class="dashboard-card chart-card">
-
-                        <div class="card-header">
-                            <div>
-                                <h3>درآمد و هزینه‌ها</h3>
-                                <p>مقایسه مجموع واریزی‌ها و برداشت‌ها در ماه‌های مختلف</p>
+                            <div class="guide-step">
+                                <span>۱</span>
+                                ورود به اپلیکیشن بلو و بخش گردش حساب
                             </div>
 
-                            <span class="chart-badge">سالانه</span>
-                        </div>
-
-                        <div class="chart-container">
-                            <canvas id="incomeExpenseChart"></canvas>
-                        </div>
-
-                    </article>
-
-                    <article class="dashboard-card chart-card">
-
-                        <div class="card-header">
-                            <div>
-                                <h3>هزینه‌ها بر اساس دسته‌بندی</h3>
-                                <p>پولات بیشتر کجا خرج شدن؟</p>
+                            <div class="guide-step">
+                                <span>۲</span>
+                                دریافت فایل Excel گردش حساب
                             </div>
+
+                            <div class="guide-step">
+                                <span>۳</span>
+                                انتخاب فایل و شروع تحلیل
+                            </div>
+
                         </div>
 
-                        <div class="chart-container doughnut-container">
-                            <canvas id="expenseCategoryChart"></canvas>
-                        </div>
+                    </div>
 
-                    </article>
+                </div>
 
-                </section>
 
-                <!-- TRANSACTIONS -->
-                <section class="dashboard-card transactions-card">
+                <!-- FILE DROPZONE -->
+
+                <div class="upload-dropzone" id="uploadDropzone">
+
+                    <input
+                        type="file"
+                        id="excelFileInput"
+                        accept=".xlsx,.xls"
+                        hidden
+                    >
+
+                    <div class="dropzone-icon">
+                        <i data-lucide="upload-cloud"></i>
+                    </div>
+
+                    <h4>فایل گردش حسابت رو انتخاب کن</h4>
+
+                    <p>
+                        فرمت‌های مجاز: XLSX و XLS · فقط بلو بانک
+                    </p>
+
+                    <button
+                        type="button"
+                        class="select-file-button"
+                        id="selectFileButton"
+                    >
+                        <i data-lucide="folder-open"></i>
+                        انتخاب فایل اکسل
+                    </button>
+
+                    <span
+                        class="selected-file-name"
+                        id="selectedFileName"
+                    >
+                        هنوز فایلی انتخاب نشده
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             DASHBOARD SECTION
+        ========================== -->
+
+        <section
+            class="dashboard-content"
+            id="dashboardSection"
+            hidden
+        >
+
+
+            <!-- DASHBOARD INTRO -->
+
+            <section class="dashboard-intro">
+
+                <div class="dashboard-intro-content">
+
+                    <span class="welcome-label">
+                        گزارش مالی شما
+                    </span>
+
+                    <h2>خلاصه وضعیت حساب</h2>
+
+                    <p>
+                        نگاهی به درآمدها، هزینه‌ها و تراکنش‌های بانکی
+                    </p>
+
+                </div>
+
+
+                <!-- DASHBOARD ACTIONS -->
+
+                <div class="dashboard-intro-actions">
+
+                    <button
+                        type="button"
+                        class="dashboard-action-button upload-new-button"
+                        id="replaceExcelButton"
+                    >
+                        <i data-lucide="file-up"></i>
+
+                        <span>
+                            آپلود فایل اکسل جدید
+                        </span>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="dashboard-action-button share-report-button"
+                        id="shareReportButton"
+                    >
+                        <i data-lucide="share-2"></i>
+
+                        <span>
+                            اشتراک‌گذاری
+                        </span>
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 STATISTICS
+            ========================== -->
+
+            <section class="stats-grid">
+
+
+                <!-- BALANCE -->
+
+                <article class="stat-card balance-card">
+
+                    <div class="stat-header">
+
+                        <span>موجودی حساب</span>
+
+                        <span class="stat-icon purple">
+                            <i data-lucide="wallet"></i>
+                        </span>
+
+                    </div>
+
+                    <h3 id="balanceValue">
+                        — <small>تومان</small>
+                    </h3>
+
+                    <span class="stat-description">
+                        آخرین موجودی ثبت‌شده
+                    </span>
+
+                </article>
+
+
+                <!-- INCOME -->
+
+                <article class="stat-card">
+
+                    <div class="stat-header">
+
+                        <span>مجموع درآمد</span>
+
+                        <span class="stat-icon green">
+                            <i data-lucide="trending-up"></i>
+                        </span>
+
+                    </div>
+
+                    <h3 id="depositsValue">
+                        — <small>تومان</small>
+                    </h3>
+
+                    <span class="stat-description positive">
+                        تمام واریزی‌ها، شامل انتقال وجه
+                    </span>
+
+                </article>
+
+
+                <!-- EXPENSE -->
+
+                <article class="stat-card">
+
+                    <div class="stat-header">
+
+                        <span>مجموع هزینه‌ها</span>
+
+                        <span class="stat-icon red">
+                            <i data-lucide="trending-down"></i>
+                        </span>
+
+                    </div>
+
+                    <h3 id="expensesValue">
+                        — <small>تومان</small>
+                    </h3>
+
+                    <span class="stat-description negative">
+                        تمام برداشت‌ها، شامل انتقال وجه
+                    </span>
+
+                </article>
+
+
+                <!-- TRANSACTION COUNT -->
+
+                <article class="stat-card">
+
+                    <div class="stat-header">
+
+                        <span>تعداد تراکنش‌ها</span>
+
+                        <span class="stat-icon blue">
+                            <i data-lucide="arrow-left-right"></i>
+                        </span>
+
+                    </div>
+
+                    <h3 id="transactionCountValue">
+                        — <small>تراکنش</small>
+                    </h3>
+
+                    <span class="stat-description">
+                        تعداد کل تراکنش‌های ثبت‌شده
+                    </span>
+
+                </article>
+
+            </section>
+
+
+            <!-- =========================
+                 CHARTS
+            ========================== -->
+
+            <section class="charts-grid">
+
+
+                <!-- INCOME / EXPENSE CHART -->
+
+                <article class="dashboard-card chart-card">
 
                     <div class="card-header">
 
                         <div>
-                            <h3>آخرین تراکنش‌ها</h3>
-                            <p>نگاهی به فعالیت‌های مالی اخیر</p>
+                            <h3>درآمد و هزینه‌ها</h3>
+
+                            <p>
+                                مقایسه درآمد و هزینه‌ها در ماه‌های مختلف
+                            </p>
                         </div>
 
-                        <button class="view-all-button">
-                            مشاهده همه
-                            <i data-lucide="arrow-left"></i>
-                        </button>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+
+                </article>
+
+
+                <!-- CATEGORY CHART -->
+
+                <article class="dashboard-card chart-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>هزینه‌ها بر اساس دسته‌بندی</h3>
+
+                            <p>
+                                پولات بیشتر کجا خرج شدن؟
+                            </p>
+                        </div>
 
                     </div>
 
-                    <div class="table-wrapper">
-
-                        <table>
-
-                            <thead>
-                                <tr>
-                                    <th>شرح تراکنش</th>
-                                    <th>دسته‌بندی</th>
-                                    <th>تاریخ</th>
-                                    <th>مبلغ</th>
-                                    <th>وضعیت</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="transactionsTable">
-
-                                <!-- Generated by JavaScript -->
-
-                            </tbody>
-
-                        </table>
-
+                    <div class="chart-container doughnut-container">
+                        <canvas id="expenseCategoryChart"></canvas>
                     </div>
 
-                </section>
+                </article>
 
-                <footer class="footer">
-                    <span>ساخته شده با ❤️ برای مدیریت بهتر پولامون</span>
-                    <span>Poolam Chi Shod? © 2026</span>
-                </footer>
+            </section>
 
-            </div>
 
-        </main>
+            <!-- =========================
+                 TRANSACTIONS
+            ========================== -->
 
-    </div>
+            <section class="dashboard-card transactions-card">
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+                <div class="card-header">
+
+                    <div>
+                        <h3>آخرین تراکنش‌ها</h3>
+
+                        <p>
+                            نگاهی به فعالیت‌های مالی اخیر
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="transactions-table-wrapper">
+
+                    <table class="transactions-table">
+
+                        <thead>
+                            <tr>
+                                <th>تاریخ</th>
+                                <th>توضیحات</th>
+                                <th>دسته‌بندی</th>
+                                <th>مبلغ</th>
+                                <th>نوع</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="transactionsTable">
+                            <!-- Transactions -->
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Pagination is generated by JavaScript -->
+
+            </section>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================== -->
+
+            <footer class="footer">
+
+                <span>
+                    ساخته شده با ❤️ برای مدیریت بهتر پولامون
+                </span>
+
+                <span>
+                    Poolam Chi Shod? © 2026
+                </span>
+
+            </footer>
+
+        </section>
+
+    </main>
 
 </body>
 

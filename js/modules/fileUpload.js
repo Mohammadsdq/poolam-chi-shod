@@ -1,116 +1,363 @@
+
 import { parseBlueBankExcel } from "./ExcelParser.js";
 import { analyzeTransactions } from "./DataAnalyzer.js";
 
 export const initializeFileUpload = () => {
 
+    // =========================
+    // DOM ELEMENTS
+    // =========================
+
     const fileInput = document.getElementById("excelFileInput");
     const selectButton = document.getElementById("selectFileButton");
-    const uploadButton = document.querySelector(".upload-button");
+    const replaceButton = document.getElementById("replaceExcelButton");
+
     const dropzone = document.getElementById("uploadDropzone");
     const fileName = document.getElementById("selectedFileName");
 
-    if (!fileInput || !selectButton || !dropzone) return;
+    if (!fileInput) {
+        console.error("Excel file input not found.");
+        return;
+    }
+
+    // Move input outside hidden upload section.
+    // This allows file selection from the dashboard too.
+    if (fileInput.parentElement !== document.body) {
+        document.body.appendChild(fileInput);
+    }
+
+    // =========================
+    // CONSTANTS & STATE
+    // =========================
+
+    const ALLOWED_EXTENSIONS = [".xlsx", ".xls"];
+
+    let isProcessing = false;
+
+    const originalReplaceButtonContent = replaceButton?.innerHTML;
 
 
-    const handleFile = async (file) => {
-        if (!file) return;
+    // =========================
+    // UI HELPERS
+    // =========================
 
-        const allowedExtensions = [".xlsx", ".xls"];
+    const updateFileName = (message, color) => {
+        if (!fileName) return;
 
-        const isValid = allowedExtensions.some(extension =>
-            file.name.toLowerCase().endsWith(extension)
-        );
+        fileName.textContent = message;
+        fileName.style.color = color;
+    };
 
-        if (!isValid) {
-            fileName.textContent =
-                "فرمت فایل معتبر نیست! فایل Excel انتخاب کن.";
 
-            fileName.style.color = "#f87171";
-            return;
+    const updateReplaceButton = (message, isLoading = false) => {
+        if (!replaceButton) return;
+
+        if (isLoading) {
+            replaceButton.disabled = true;
+
+            replaceButton.innerHTML = `
+                <i data-lucide="loader-circle"></i>
+                <span>${message}</span>
+            `;
+        } else {
+            replaceButton.disabled = false;
+
+            replaceButton.innerHTML =
+                originalReplaceButtonContent || `
+                    <i data-lucide="file-up"></i>
+                    <span>آپلود فایل اکسل جدید</span>
+                `;
         }
 
-        fileName.textContent = "در حال بررسی و پردازش فایل...";
-        fileName.style.color = "#fbbf24";
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    };
 
+
+    const setProcessingState = (processing) => {
+        isProcessing = processing;
+
+        if (selectButton) {
+            selectButton.disabled = processing;
+        }
+
+        if (replaceButton) {
+            replaceButton.disabled = processing;
+        }
+    };
+
+
+    // =========================
+    // FILE VALIDATION
+    // =========================
+
+    const validateFile = (file) => {
+        if (!file) {
+            throw new Error("فایلی انتخاب نشده است.");
+        }
+
+        const fileName = file.name.toLowerCase();
+
+        const hasValidExtension = ALLOWED_EXTENSIONS.some(extension =>
+            fileName.endsWith(extension)
+        );
+
+        if (!hasValidExtension) {
+            throw new Error(
+                "فرمت فایل معتبر نیست! لطفاً فایل XLSX یا XLS انتخاب کن."
+            );
+        }
+
+        if (file.size === 0) {
+            throw new Error("فایل انتخاب‌شده خالی است.");
+        }
+
+        return true;
+    };
+
+
+    // =========================
+    // FILE HANDLER
+    // =========================
+
+    const handleFile = async (file, source = "initial") => {
+
+        if (!file || isProcessing) return;
+
+        const isReplacement = source === "replacement";
 
         try {
+
+            // Start processing
+            setProcessingState(true);
+
+            validateFile(file);
+
+            // Update UI
+            if (isReplacement) {
+                updateReplaceButton("در حال پردازش...", true);
+            } else {
+                updateFileName(
+                    "در حال بررسی و پردازش فایل...",
+                    "#1769e0"
+                );
+            }
+
+
+            // =========================
+            // PARSE EXCEL
+            // =========================
+
             const transactions = await parseBlueBankExcel(file);
 
-            // Analyze transactions
+            if (
+                !Array.isArray(transactions) ||
+                transactions.length === 0
+            ) {
+                throw new Error(
+                    "هیچ تراکنش معتبری در فایل پیدا نشد."
+                );
+            }
+
+
+            // =========================
+            // ANALYZE TRANSACTIONS
+            // =========================
+
             const analysis = analyzeTransactions(transactions);
 
-            fileName.textContent =
-                `${analysis.summary.transactionCount} تراکنش با موفقیت تحلیل شد.`;
+            if (
+                !analysis?.summary ||
+                !Array.isArray(analysis.transactions)
+            ) {
+                throw new Error(
+                    "ساختار اطلاعات تحلیل‌شده معتبر نیست."
+                );
+            }
 
-            fileName.style.color = "#22c55e";
+            if (
+                analysis.transactions.length === 0 ||
+                analysis.summary.transactionCount === 0
+            ) {
+                throw new Error(
+                    "تراکنش معتبری برای نمایش وجود ندارد."
+                );
+            }
+
+
+            // =========================
+            // SUCCESS
+            // =========================
 
             console.log("Raw Transactions:", transactions);
             console.log("Analysis Result:", analysis);
 
-            // Send analysis to the application
+            // Show success message
+            updateFileName(
+                `${analysis.summary.transactionCount.toLocaleString("fa-IR")} تراکنش با موفقیت تحلیل شد.`,
+                "#16a36a"
+            );
+
+
+            // =========================
+            // DISPATCH EVENT
+            // =========================
+
             window.dispatchEvent(
                 new CustomEvent("transactions:loaded", {
                     detail: {
                         transactions: analysis.transactions,
                         analysis,
-                        fileName: file.name
+                        fileName: file.name,
+                        isReplacement
                     }
                 })
             );
 
         } catch (error) {
+
+            // =========================
+            // ERROR HANDLING
+            // =========================
+
             console.error("Excel Processing Error:", error);
 
-            fileName.textContent =
-                error.message || "خطا در پردازش فایل اکسل";
+            const errorMessage =
+                error.message || "خطا در پردازش فایل اکسل.";
 
-            fileName.style.color = "#f87171";
+            updateFileName(errorMessage, "#e25563");
+
+            if (isReplacement) {
+                console.warn(
+                    "New Excel file could not be processed. Previous dashboard data remains unchanged."
+                );
+            }
+
+        } finally {
+
+            // =========================
+            // RESET STATE
+            // =========================
+
+            setProcessingState(false);
+
+            if (isReplacement) {
+                updateReplaceButton();
+            }
+
         }
-
     };
 
 
-    selectButton.addEventListener("click", () => {
+    // =========================
+    // OPEN FILE PICKER
+    // =========================
+
+    const openFilePicker = (source = "initial") => {
+
+        if (isProcessing) return;
+
+        // Remember which button opened the file picker
+        fileInput.dataset.source = source;
+
+        // Allow selecting the same file again
+        fileInput.value = "";
+
         fileInput.click();
+    };
+
+
+    // =========================
+    // INITIAL UPLOAD BUTTON
+    // =========================
+
+    selectButton?.addEventListener("click", () => {
+        openFilePicker("initial");
     });
 
-    uploadButton?.addEventListener("click", () => {
-        document.getElementById("uploadDropzone")
-            .scrollIntoView({ behavior: "smooth", block: "center" });
 
-        fileInput.click();
+    // =========================
+    // REPLACE EXCEL BUTTON
+    // =========================
+
+    replaceButton?.addEventListener("click", () => {
+        openFilePicker("replacement");
     });
+
+
+    // =========================
+    // FILE INPUT CHANGE
+    // =========================
 
     fileInput.addEventListener("change", (event) => {
-        handleFile(event.target.files[0]);
+
+        const file = event.target.files?.[0];
+
+        const source = event.target.dataset.source || "initial";
+
+        if (!file) return;
+
+        handleFile(file, source);
+
     });
 
-    // Drag & Drop
 
-    dropzone.addEventListener("dragover", (event) => {
-        event.preventDefault();
-        dropzone.classList.add("drag-over");
-    });
+    // =========================
+    // DRAG & DROP
+    // =========================
 
-    dropzone.addEventListener("dragleave", () => {
-        dropzone.classList.remove("drag-over");
-    });
+    if (dropzone) {
 
-    dropzone.addEventListener("drop", (event) => {
-        event.preventDefault();
+        dropzone.addEventListener("dragover", (event) => {
 
-        dropzone.classList.remove("drag-over");
+            event.preventDefault();
 
-        const file = event.dataTransfer.files[0];
+            if (!isProcessing) {
+                dropzone.classList.add("drag-over");
+            }
 
-        handleFile(file);
+        });
 
-        // Keep the selected file accessible through the input.
-        if (file) {
-            const transfer = new DataTransfer();
-            transfer.items.add(file);
-            fileInput.files = transfer.files;
-        }
-    });
+
+        dropzone.addEventListener("dragleave", (event) => {
+
+            if (!dropzone.contains(event.relatedTarget)) {
+                dropzone.classList.remove("drag-over");
+            }
+
+        });
+
+
+        dropzone.addEventListener("drop", (event) => {
+
+            event.preventDefault();
+
+            dropzone.classList.remove("drag-over");
+
+            if (isProcessing) return;
+
+            const file = event.dataTransfer?.files?.[0];
+
+            handleFile(file, "initial");
+
+        });
+
+    }
+
+
+    // =========================
+    // INITIALIZATION
+    // =========================
+
+    if (!selectButton) {
+        console.warn("Initial file selection button not found.");
+    }
+
+    if (!replaceButton) {
+        console.warn("Replace Excel button not found.");
+    }
+
+    console.log("File upload module initialized successfully.");
 
 };
