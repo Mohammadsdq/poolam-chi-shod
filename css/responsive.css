@@ -1,0 +1,158 @@
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1100px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .doughnut-container {
+        max-width: 340px;
+    }
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        transform: translateX(100%);
+        width: 270px;
+        min-width: 270px;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .close-sidebar {
+        display: grid;
+        place-items: center;
+    }
+
+    .main-content {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .menu-toggle {
+        display: grid;
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(3px);
+
+        z-index: 90;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .topbar {
+        padding: 0 18px;
+        height: 75px;
+    }
+
+    .dashboard-content {
+        padding: 25px 18px;
+    }
+
+    .welcome-section {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .welcome-section h2 {
+        font-size: 20px;
+    }
+
+    .upload-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-card h3 {
+        font-size: 17px;
+    }
+
+    .dashboard-card {
+        padding: 17px;
+    }
+
+    .chart-container {
+        height: 240px;
+    }
+
+    .profile-info {
+        display: none;
+    }
+
+    .footer {
+        flex-direction: column;
+        text-align: center;
+    }
+
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media (max-width: 400px) {
+
+    .topbar {
+        padding: 0 12px;
+    }
+
+    .dashboard-content {
+        padding: 20px 12px;
+    }
+
+    .page-title h1 {
+        font-size: 15px;
+    }
+
+    .page-title p {
+        font-size: 9px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card h3 {
+        font-size: 20px;
+    }
+
+    .topbar-left {
+        gap: 8px;
+    }
+
+    .charts-grid {
+        gap: 12px;
+    }
+
+}
