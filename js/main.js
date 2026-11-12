@@ -5,6 +5,8 @@ import { initializeSidebar } from "./modules/sidebar.js";
 
 import { renderCharts } from "./modules/charts.js";
 
+import { initializeFileUpload } from "./modules/fileUpload.js";
+
 
 const renderTransactions = () => {
 
@@ -69,6 +71,8 @@ const renderTransactions = () => {
 const initializeApp = () => {
 
     initializeSidebar();
+
+    initializeFileUpload();
 
     renderTransactions();
 

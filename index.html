@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/responsive.css">
@@ -176,6 +177,74 @@
                     </button>
 
                 </section>
+
+
+                <!-- EXCEL UPLOAD GUIDE -->
+
+                <section class="upload-guide">
+
+                    <div class="upload-guide-content">
+
+                        <div class="upload-guide-icon">
+                            <i data-lucide="file-spreadsheet"></i>
+                        </div>
+
+                        <div class="upload-guide-text">
+                            <span class="guide-label">شروع تحلیل مالی</span>
+
+                            <h3>اول باید بفهمیم پولات کجا رفتن!</h3>
+
+                            <p>
+                                برای شروع، وارد اپلیکیشن بلو شو و از بخش
+                                <strong>گردش حساب</strong>، خروجی اکسل تراکنش‌هات
+                                رو دریافت کن و اینجا آپلودش کن.
+                            </p>
+
+                            <div class="guide-steps">
+                                <div class="guide-step">
+                                    <span>۱</span>
+                                    ورود به بلو و بخش گردش حساب
+                                </div>
+
+                                <div class="guide-step">
+                                    <span>۲</span>
+                                    دریافت فایل Excel گردش حساب
+                                </div>
+
+                                <div class="guide-step">
+                                    <span>۳</span>
+                                    آپلود فایل در این قسمت
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="upload-dropzone" id="uploadDropzone">
+
+                        <input type="file" id="excelFileInput" accept=".xlsx,.xls" hidden>
+
+                        <div class="dropzone-icon">
+                            <i data-lucide="upload-cloud"></i>
+                        </div>
+
+                        <h4>فایل گردش حسابت رو اینجا انتخاب کن</h4>
+
+                        <p>فرمت‌های مجاز: XLSX و XLS</p>
+
+                        <button type="button" class="select-file-button" id="selectFileButton">
+                            <i data-lucide="folder-open"></i>
+                            انتخاب فایل اکسل
+                        </button>
+
+                        <span class="selected-file-name" id="selectedFileName">
+                            هنوز فایلی انتخاب نشده
+                        </span>
+
+                    </div>
+
+                </section>
+
 
                 <!-- STATISTICS -->
                 <section class="stats-grid">
@@ -346,4 +415,5 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 </body>
+
 </html>

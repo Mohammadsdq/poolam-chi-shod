@@ -737,3 +737,204 @@ tbody tr:last-child td {
         scroll-behavior: auto !important;
     }
 }
+
+
+/* =========================
+   EXCEL UPLOAD GUIDE
+========================= */
+
+.upload-guide {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 20px;
+
+    padding: 23px;
+
+    margin-bottom: 25px;
+
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 18px;
+
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(139, 92, 246, 0.12),
+            transparent 45%
+        ),
+        var(--bg-card);
+
+    animation: fadeUp 0.6s ease both;
+}
+
+.upload-guide-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.upload-guide-icon {
+    min-width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 14px;
+
+    background: var(--primary-glow);
+    color: var(--primary-light);
+}
+
+.upload-guide-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.guide-label {
+    color: var(--primary-light);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.upload-guide-text h3 {
+    font-size: 16px;
+    margin: 7px 0;
+}
+
+.upload-guide-text p {
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 2;
+}
+
+.upload-guide-text p strong {
+    color: var(--text-primary);
+}
+
+.guide-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.guide-step {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.guide-step span {
+    width: 23px;
+    height: 23px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 7px;
+
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--primary-light);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.upload-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    border: 1px dashed rgba(167, 139, 250, 0.4);
+    border-radius: 14px;
+
+    background: rgba(139, 92, 246, 0.04);
+
+    text-align: center;
+
+    transition: var(--transition);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.drag-over {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: var(--primary-light);
+}
+
+.dropzone-icon {
+    color: var(--primary-light);
+    margin-bottom: 12px;
+}
+
+.dropzone-icon svg {
+    width: 34px;
+    height: 34px;
+}
+
+.upload-dropzone h4 {
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.upload-dropzone p {
+    color: var(--text-muted);
+    font-size: 10px;
+    margin-bottom: 15px;
+}
+
+.select-file-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 17px;
+
+    border-radius: 9px;
+
+    background: var(--primary);
+    color: white;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    transition: var(--transition);
+}
+
+.select-file-button:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+}
+
+.selected-file-name {
+    max-width: 100%;
+    margin-top: 12px;
+
+    color: var(--text-secondary);
+    font-size: 10px;
+
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+
+    .upload-guide {
+        grid-template-columns: 1fr;
+        padding: 17px;
+    }
+
+    .upload-guide-content {
+        gap: 12px;
+    }
+
+    .upload-guide-text h3 {
+        font-size: 14px;
+    }
+
+}
