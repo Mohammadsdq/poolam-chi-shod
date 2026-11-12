@@ -1,6 +1,4 @@
 
-// NORMALIZE TRANSACTION TYPE
-
 const normalizeType = (type) => {
     return String(type ?? "")
         .trim()
@@ -9,18 +7,7 @@ const normalizeType = (type) => {
         .replace(/[\u200c\s]/g, "");
 };
 
-// TRANSACTION TYPES
-
 const transactionTypes = {
-    expense: [
-        "خرید از فروشگاه",
-        "خرید اینترنتی",
-        "قبض",
-        "پرداخت خودکار",
-        "شارژ سیم‌کارت",
-        "کارمزد"
-    ],
-
     transferOut: [
         "انتقال به سپرده",
         "انتقال به کارت",
@@ -35,276 +22,218 @@ const transactionTypes = {
         "شارژ سپرده با کارت"
     ],
 
-    refund: [
-        "برگشت پول"
-    ],
-
-    adjustment: [
-        "اصلاح سند"
-    ]
+    refund: ["برگشت پول"],
+    adjustment: ["اصلاح سند"]
 };
 
-// NORMALIZED TRANSACTION TYPES
-
-const normalizedTransactionTypes = Object.fromEntries(
+const typeSets = Object.fromEntries(
     Object.entries(transactionTypes).map(([key, types]) => [
         key,
         new Set(types.map(normalizeType))
     ])
 );
 
-// CATEGORY MAPPER
+// تعیین دسته‌بندی هر تراکنش
 
 const getTransactionCategory = (type) => {
     const normalizedType = normalizeType(type);
 
-    if (normalizedTransactionTypes.expense.has(normalizedType)) {
-        if (normalizedType.includes("خرید")) return "خرید";
-        if (normalizedType === normalizeType("قبض")) return "قبوض";
-        if (normalizedType === normalizeType("شارژ سیم‌کارت")) return "شارژ";
-        if (normalizedType === normalizeType("کارمزد")) return "کارمزد";
-
-        return "پرداخت خودکار";
-    }
-
-    if (normalizedTransactionTypes.transferOut.has(normalizedType)) {
+    // انتقال وجه
+    if (typeSets.transferOut.has(normalizedType)) {
         return "انتقال وجه";
     }
 
-    if (normalizedTransactionTypes.transferIn.has(normalizedType)) {
+    // دریافت وجه
+    if (typeSets.transferIn.has(normalizedType)) {
         return "دریافت وجه";
     }
 
-    if (normalizedTransactionTypes.refund.has(normalizedType)) {
+    // برگشت پول
+    if (typeSets.refund.has(normalizedType)) {
         return "برگشت پول";
     }
 
-    if (normalizedTransactionTypes.adjustment.has(normalizedType)) {
+    // اصلاح حساب
+    if (typeSets.adjustment.has(normalizedType)) {
         return "اصلاح حساب";
+    }
+
+    // کارمزد
+    if (normalizedType.includes(normalizeType("کارمزد"))) {
+        return "کارمزد";
+    }
+
+    // قبوض
+    if (normalizedType.includes(normalizeType("قبض"))) {
+        return "قبوض";
+    }
+
+    // پرداخت خودکار
+    if (normalizedType.includes(normalizeType("پرداخت خودکار"))) {
+        return "پرداخت خودکار";
+    }
+
+    // شارژ
+    if (normalizedType.includes(normalizeType("شارژ"))) {
+        return "شارژ";
+    }
+
+    // خرید
+    if (normalizedType.includes(normalizeType("خرید"))) {
+        return "خرید";
     }
 
     return "سایر";
 };
 
-// TRANSACTION CLASSIFIER
-
+// تشخیص نوع تراکنش
 const classifyTransaction = (transaction) => {
     const type = normalizeType(transaction.type);
 
-    let category = "سایر";
     let flow = "unknown";
 
-    if (normalizedTransactionTypes.expense.has(type)) {
-        category = getTransactionCategory(type);
+    if (transaction.withdrawal > 0) {
         flow = "expense";
-    }
-
-    else if (normalizedTransactionTypes.transferOut.has(type)) {
-        category = "انتقال وجه";
-        flow = "transferOut";
-    }
-
-    else if (normalizedTransactionTypes.transferIn.has(type)) {
-        category = "دریافت وجه";
-        flow = "transferIn";
-    }
-
-    else if (normalizedTransactionTypes.refund.has(type)) {
-        category = "برگشت پول";
-        flow = "refund";
-    }
-
-    else if (normalizedTransactionTypes.adjustment.has(type)) {
-        category = "اصلاح حساب";
-        flow = "adjustment";
+    } else if (transaction.deposit > 0) {
+        flow = "income";
     }
 
     return {
         ...transaction,
-        category,
+        category: getTransactionCategory(type),
         flow
     };
 };
 
-// MONTHLY DATE HELPER
-
+// استخراج ماه از تاریخ شمسی
 const getMonthKey = (date) => {
-    const match = String(date ?? "").match(/^(\d{4})\/(\d{1,2})/);
+    const match = String(date ?? "").match(
+        /^(\d{4})\/(\d{1,2})/
+    );
 
     if (!match) return "نامشخص";
 
     return `${match[1]}/${match[2].padStart(2, "0")}`;
 };
 
-// MAIN ANALYZER
-
-export const analyzeTransactions = (transactions) => {
-    if (!Array.isArray(transactions) || transactions.length === 0) {
-        throw new Error("اطلاعاتی برای تحلیل وجود ندارد.");
-    }
-
-    const analyzedTransactions = transactions.map(classifyTransaction);
-
-    // BASIC TOTALS
-
-    const totalDeposits = analyzedTransactions.reduce(
-        (total, transaction) => total + (Number(transaction.deposit) || 0),
+// محاسبه مجموع یک فیلد
+const sumTransactions = (transactions, field) => {
+    return transactions.reduce(
+        (total, transaction) => total + (transaction[field] || 0),
         0
     );
+};
 
-    const totalWithdrawals = analyzedTransactions.reduce(
-        (total, transaction) => total + (Number(transaction.withdrawal) || 0),
-        0
+// تحلیل تمام تراکنش‌ها
+export const analyzeTransactions = (rawTransactions) => {
+    const transactions = rawTransactions.map(classifyTransaction);
+
+    // مجموع تمام واریزی‌ها
+    const totalDeposits = sumTransactions(
+        transactions,
+        "deposit"
     );
 
-    // EXPENSES - EXCLUDING INTERNAL TRANSFERS
-
-    const expenses = analyzedTransactions.filter(
-        transaction => transaction.flow === "expense"
+    // مجموع تمام برداشت‌ها، شامل انتقال وجه
+    const totalExpenses = sumTransactions(
+        transactions,
+        "withdrawal"
     );
 
-    const totalExpenses = expenses.reduce(
-        (total, transaction) => total + (Number(transaction.withdrawal) || 0),
-        0
+    // تعداد تراکنش‌ها
+    const transactionCount = transactions.length;
+
+    // تراکنش‌های خروجی و ورودی انتقال وجه
+    const transfersOut = transactions.filter(transaction =>
+        typeSets.transferOut.has(normalizeType(transaction.type))
     );
 
-    // TRANSFER TOTALS
-
-    const transfersOut = analyzedTransactions.filter(
-        transaction => transaction.flow === "transferOut"
+    const transfersIn = transactions.filter(transaction =>
+        typeSets.transferIn.has(normalizeType(transaction.type))
     );
 
-    const transfersIn = analyzedTransactions.filter(
-        transaction => transaction.flow === "transferIn"
+    // برگشت وجه
+    const refunds = transactions.filter(transaction =>
+        typeSets.refund.has(normalizeType(transaction.type))
     );
 
-    const totalTransfersOut = transfersOut.reduce(
-        (total, transaction) => total + (Number(transaction.withdrawal) || 0),
-        0
+    // کارمزدها
+    const fees = transactions.filter(transaction =>
+        normalizeType(transaction.type) === normalizeType("کارمزد")
     );
 
-    const totalTransfersIn = transfersIn.reduce(
-        (total, transaction) => total + (Number(transaction.deposit) || 0),
-        0
-    );
+    // دسته‌بندی هزینه‌ها بر اساس نوع تراکنش
+    // انتقال وجه هم در این بخش جزو هزینه‌ها محسوب می‌شود.
+    const categoryMap = {};
 
-    // REFUNDS
+    transactions
+        .filter(transaction => transaction.withdrawal > 0)
+        .forEach(transaction => {
+            const category = transaction.category;
 
-    const refunds = analyzedTransactions.filter(
-        transaction => transaction.flow === "refund"
-    );
+            if (!categoryMap[category]) {
+                categoryMap[category] = 0;
+            }
 
-    const totalRefunds = refunds.reduce(
-        (total, transaction) => total + (Number(transaction.deposit) || 0),
-        0
-    );
+            categoryMap[category] += transaction.withdrawal;
+        });
 
-    // FEES
+    const categories = Object.entries(categoryMap)
+        .map(([category, total]) => ({
+            category,
+            total
+        }))
+        .sort((a, b) => b.total - a.total);
 
-    const fees = expenses.filter(
-        transaction =>
-            normalizeType(transaction.type) === normalizeType("کارمزد")
-    );
+    // آمار ماهانه
+    const monthlyMap = {};
 
-    const totalFees = fees.reduce(
-        (total, transaction) => total + (Number(transaction.withdrawal) || 0),
-        0
-    );
-
-    // CATEGORY STATISTICS
-
-    const categoryStats = {};
-
-    expenses.forEach(transaction => {
-        const category = transaction.category;
-
-        if (!categoryStats[category]) {
-            categoryStats[category] = {
-                category,
-                total: 0,
-                count: 0
-            };
-        }
-
-        categoryStats[category].total += Number(transaction.withdrawal) || 0;
-        categoryStats[category].count++;
-    });
-
-    const categories = Object.values(categoryStats).sort(
-        (a, b) => b.total - a.total
-    );
-
-    // MONTHLY STATISTICS
-
-    const monthlyStats = {};
-
-    analyzedTransactions.forEach(transaction => {
+    transactions.forEach(transaction => {
         const month = getMonthKey(transaction.date);
 
-        if (!monthlyStats[month]) {
-            monthlyStats[month] = {
+        if (!monthlyMap[month]) {
+            monthlyMap[month] = {
                 month,
                 income: 0,
-                expenses: 0,
-                transfersIn: 0,
-                transfersOut: 0
+                expenses: 0
             };
         }
 
-        const currentMonth = monthlyStats[month];
-
-        if (transaction.flow === "expense") {
-            currentMonth.expenses += Number(transaction.withdrawal) || 0;
-        }
-
-        else if (transaction.flow === "transferIn") {
-            currentMonth.transfersIn += Number(transaction.deposit) || 0;
-        }
-
-        else if (transaction.flow === "transferOut") {
-            currentMonth.transfersOut += Number(transaction.withdrawal) || 0;
-        }
-
-        else if (
-            transaction.flow === "refund" ||
-            transaction.flow === "adjustment"
-        ) {
-            currentMonth.income += Number(transaction.deposit) || 0;
-        }
+        monthlyMap[month].income += transaction.deposit;
+        monthlyMap[month].expenses += transaction.withdrawal;
     });
 
-    const monthly = Object.values(monthlyStats).sort(
-        (a, b) => a.month.localeCompare(b.month)
+    const monthly = Object.values(monthlyMap)
+        .sort((a, b) => a.month.localeCompare(b.month));
+
+    // میانگین هزینه هر تراکنش برداشت
+    const expenseTransactions = transactions.filter(
+        transaction => transaction.withdrawal > 0
     );
 
-    // AVERAGE EXPENSE
-
-    const averageExpense = expenses.length
-        ? totalExpenses / expenses.length
+    const averageExpense = expenseTransactions.length
+        ? totalExpenses / expenseTransactions.length
         : 0;
 
-    // FINAL BALANCE
+    // آخرین موجودی حساب
+    const latestTransaction = [...transactions].sort(
+        (a, b) => b.date.localeCompare(a.date)
+    )[0];
 
-    const sortedByDate = [...analyzedTransactions].sort(
-        (a, b) => String(b.date).localeCompare(String(a.date))
-    );
-
-    const endingBalance = sortedByDate[0]?.balance ?? 0;
-
-    // FINAL RESULT
+    const endingBalance = latestTransaction?.balance || 0;
 
     return {
-        transactions: analyzedTransactions,
+        transactions,
 
         summary: {
-            transactionCount: analyzedTransactions.length,
+            transactionCount,
             totalDeposits,
-            totalWithdrawals,
+            totalWithdrawals: totalExpenses,
             totalExpenses,
-            totalTransfersIn,
-            totalTransfersOut,
-            totalRefunds,
-            totalFees,
+            totalTransfersIn: sumTransactions(transfersIn, "deposit"),
+            totalTransfersOut: sumTransactions(transfersOut, "withdrawal"),
+            totalRefunds: sumTransactions(refunds, "deposit"),
+            totalFees: sumTransactions(fees, "withdrawal"),
             averageExpense,
             endingBalance
         },

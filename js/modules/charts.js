@@ -3,11 +3,9 @@ const chartFont = {
     family: "Vazirmatn"
 };
 
-// Keep chart instances
 let incomeExpenseChart = null;
 let expenseCategoryChart = null;
 
-// CHART COLORS
 const categoryColors = [
     "#8b5cf6",
     "#38bdf8",
@@ -15,10 +13,16 @@ const categoryColors = [
     "#f59e0b",
     "#f87171",
     "#ec4899",
-    "#14b8a6"
+    "#14b8a6",
+    "#a78bfa"
 ];
 
-// COMMON CHART OPTIONS
+// تبدیل ریال به تومان و نمایش فارسی
+const formatToman = (value) => {
+    return `${Math.round(value).toLocaleString("fa-IR")} تومان`;
+};
+
+// تنظیمات مشترک نمودارها
 const commonOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -33,13 +37,25 @@ const commonOptions = {
                 usePointStyle: true,
                 padding: 15
             }
+        },
+
+        tooltip: {
+            callbacks: {
+                label(context) {
+                    const value = context.parsed.y ?? context.parsed;
+
+                    return `${context.dataset.label}: ${formatToman(value)}`;
+                }
+            }
         }
     }
 };
 
-// RENDER INCOME & EXPENSE CHART
+// نمودار درآمد و هزینه ماهانه
 const renderIncomeExpenseChart = (monthlyData = []) => {
     const canvas = document.getElementById("incomeExpenseChart");
+
+    if (!canvas) return;
 
     if (incomeExpenseChart) {
         incomeExpenseChart.destroy();
@@ -55,23 +71,16 @@ const renderIncomeExpenseChart = (monthlyData = []) => {
 
             datasets: [
                 {
-                    label: "هزینه‌ها",
-                    data: monthlyData.map(item => item.expenses / 10),
-                    backgroundColor: "#38bdf8",
-                    borderRadius: 6,
-                    barPercentage: 0.65
-                },
-                {
-                    label: "واریزی‌ها",
-                    data: monthlyData.map(item => item.transfersIn / 10),
-                    backgroundColor: "#8b5cf6",
-                    borderRadius: 6,
-                    barPercentage: 0.65
-                },
-                {
-                    label: "برگشت وجه و اصلاحات",
+                    label: "مجموع درآمد",
                     data: monthlyData.map(item => item.income / 10),
                     backgroundColor: "#22c55e",
+                    borderRadius: 6,
+                    barPercentage: 0.65
+                },
+                {
+                    label: "مجموع هزینه‌ها",
+                    data: monthlyData.map(item => item.expenses / 10),
+                    backgroundColor: "#f87171",
                     borderRadius: 6,
                     barPercentage: 0.65
                 }
@@ -104,8 +113,9 @@ const renderIncomeExpenseChart = (monthlyData = []) => {
                         color: "#9299ad",
                         font: chartFont,
 
-                        callback: (value) =>
-                            Number(value).toLocaleString("fa-IR")
+                        callback(value) {
+                            return Number(value).toLocaleString("fa-IR");
+                        }
                     }
                 }
             }
@@ -113,9 +123,11 @@ const renderIncomeExpenseChart = (monthlyData = []) => {
     });
 };
 
-// RENDER EXPENSE CATEGORY CHART
+// نمودار دسته‌بندی هزینه‌ها
 const renderExpenseCategoryChart = (categories = []) => {
     const canvas = document.getElementById("expenseCategoryChart");
+
+    if (!canvas) return;
 
     if (expenseCategoryChart) {
         expenseCategoryChart.destroy();
@@ -145,17 +157,28 @@ const renderExpenseCategoryChart = (categories = []) => {
         options: {
             ...commonOptions,
 
-            cutout: "72%"
+            cutout: "72%",
+
+            plugins: {
+                ...commonOptions.plugins,
+
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            return `${context.label}: ${formatToman(context.parsed)}`;
+                        }
+                    }
+                }
+            }
         }
     });
 };
 
-// MAIN CHART RENDERER
+// تابع اصلی نمایش نمودارها
 export const renderCharts = (analysis = null) => {
     const monthlyData = analysis?.monthly || [];
     const categories = analysis?.categories || [];
 
     renderIncomeExpenseChart(monthlyData);
-
     renderExpenseCategoryChart(categories);
 };

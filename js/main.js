@@ -4,18 +4,39 @@ import { renderCharts } from "./modules/charts.js";
 import { initializeFileUpload } from "./modules/fileUpload.js";
 
 // DOM ELEMENTS
+
 const balanceValue = document.getElementById("balanceValue");
 const depositsValue = document.getElementById("depositsValue");
 const expensesValue = document.getElementById("expensesValue");
 const transactionCountValue = document.getElementById("transactionCountValue");
+
+const transfersInValue = document.getElementById("transfersInValue");
+const transfersOutValue = document.getElementById("transfersOutValue");
+
 const transactionsTable = document.getElementById("transactionsTable");
 
 // FORMAT RIAL TO TOMAN
+
 const formatToman = (amount) => {
-    return Math.round((amount || 0) / 10).toLocaleString("fa-IR");
+    return Math.round((Number(amount) || 0) / 10)
+        .toLocaleString("fa-IR");
+};
+
+// UPDATE STAT VALUE
+
+const updateStatValue = (element, value, unit) => {
+    const small = document.createElement("small");
+
+    small.textContent = unit;
+
+    element.replaceChildren(
+        document.createTextNode(value + " "),
+        small
+    );
 };
 
 // FORMAT TRANSACTION AMOUNT
+
 const formatTransactionAmount = (transaction) => {
     if (transaction.deposit > 0) {
         return {
@@ -38,6 +59,7 @@ const formatTransactionAmount = (transaction) => {
 };
 
 // CREATE TABLE CELL
+
 const createCell = (text, className = "") => {
     const cell = document.createElement("td");
 
@@ -51,11 +73,13 @@ const createCell = (text, className = "") => {
 };
 
 // CREATE TRANSACTION ROW
+
 const createTransactionRow = (transaction) => {
     const row = document.createElement("tr");
 
     const nameCell = document.createElement("td");
     const nameContainer = document.createElement("div");
+
     nameContainer.className = "transaction-name";
 
     const iconContainer = document.createElement("div");
@@ -75,16 +99,22 @@ const createTransactionRow = (transaction) => {
     const textContainer = document.createElement("div");
 
     const title = document.createElement("strong");
+
     title.textContent = transaction.type || "تراکنش";
 
     const description = document.createElement("span");
-    description.textContent = transaction.description || "بدون توضیحات";
+
+    description.textContent =
+        transaction.description || "بدون توضیحات";
 
     textContainer.append(title, description);
+
     nameContainer.append(iconContainer, textContainer);
+
     nameCell.appendChild(nameContainer);
 
     const categoryCell = document.createElement("td");
+
     const categoryBadge = document.createElement("span");
 
     categoryBadge.className = "category-badge";
@@ -95,9 +125,14 @@ const createTransactionRow = (transaction) => {
     const dateCell = createCell(transaction.date);
 
     const amount = formatTransactionAmount(transaction);
-    const amountCell = createCell(amount.text, amount.className);
+
+    const amountCell = createCell(
+        amount.text,
+        amount.className
+    );
 
     const statusCell = document.createElement("td");
+
     const statusBadge = document.createElement("span");
 
     statusBadge.className = "status-badge";
@@ -117,13 +152,14 @@ const createTransactionRow = (transaction) => {
 };
 
 // RENDER TRANSACTIONS
+
 const renderTransactions = (transactions) => {
     const fragment = document.createDocumentFragment();
 
-    // Sort by date and show latest transactions
     const latestTransactions = [...transactions]
         .sort((a, b) => {
-            const dateComparison = String(b.date).localeCompare(String(a.date));
+            const dateComparison = String(b.date)
+                .localeCompare(String(a.date));
 
             if (dateComparison !== 0) {
                 return dateComparison;
@@ -134,28 +170,25 @@ const renderTransactions = (transactions) => {
         .slice(0, 10);
 
     latestTransactions.forEach(transaction => {
-        fragment.appendChild(createTransactionRow(transaction));
+        fragment.appendChild(
+            createTransactionRow(transaction)
+        );
     });
 
     transactionsTable.replaceChildren(fragment);
 };
 
 // UPDATE STATISTICS
+
 const updateStatistics = (summary) => {
-    balanceValue.innerHTML =
-        `${formatToman(summary.endingBalance)} <small>تومان</small>`;
-
-    depositsValue.innerHTML =
-        `${formatToman(summary.totalDeposits)} <small>تومان</small>`;
-
-    expensesValue.innerHTML =
-        `${formatToman(summary.totalExpenses)} <small>تومان</small>`;
-
-    transactionCountValue.innerHTML =
-        `${summary.transactionCount.toLocaleString("fa-IR")} <small>تراکنش</small>`;
+    balanceValue.innerHTML = `${formatToman(summary.endingBalance)} <small>تومان</small>`;
+    depositsValue.innerHTML = `${formatToman(summary.totalDeposits)} <small>تومان</small>`;
+    expensesValue.innerHTML = `${formatToman(summary.totalExpenses)} <small>تومان</small>`;
+    transactionCountValue.innerHTML = `${summary.transactionCount.toLocaleString("fa-IR")} <small>تراکنش</small>`;
 };
 
 // UPDATE DASHBOARD
+
 const updateDashboard = (analysis) => {
     updateStatistics(analysis.summary);
 
@@ -169,12 +202,14 @@ const updateDashboard = (analysis) => {
 };
 
 // INITIALIZE APP
+
 const initializeApp = () => {
     initializeSidebar();
 
     initializeFileUpload();
 
-    // Wait for analyzed Excel data
+    // WAIT FOR ANALYZED EXCEL DATA
+
     window.addEventListener("transactions:loaded", (event) => {
         const { analysis } = event.detail;
 
@@ -188,7 +223,9 @@ const initializeApp = () => {
 
     renderCharts(null);
 
-    lucide.createIcons();
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 };
 
 document.addEventListener("DOMContentLoaded", initializeApp);
